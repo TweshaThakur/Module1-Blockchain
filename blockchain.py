@@ -11,6 +11,7 @@ import datetime
 import hashlib
 import json
 from flask import Flask, jsonify
+from markupsafe import Markup
 
 #part 1 creating blockchain
 
@@ -64,9 +65,11 @@ class Blockchain:
             block_index+=1
         return True
         
+    
 #part 2 mining blockchain
 #create a web app
 app=Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 #creating blockchain
 blockchain =Blockchain()
 #minig a new block
@@ -84,3 +87,14 @@ def mine_block():
                'proof': block['proof'],
                'previous_hash': block['previous_hash']}
     return jsonify(response), 200
+
+#getting the full blockchain
+
+@app.route('/get_chain',methods=['GET'])
+def get_chain():
+    response= {'chain': blockchain.chain,
+               'length': len(blockchain.chain)}
+    return jsonify(response), 200
+#running the app 
+
+app.run(host= '0.0.0.0', port = 5000)
